@@ -9,14 +9,14 @@ import org.springframework.web.client.RestTemplate;
 public class ExternalApiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private static final String baseUrl = "https://jsonplaceholder.typicode.com/";
+    private static final String BASE_URL = "https://jsonplaceholder.typicode.com/";
 
-    public User validateUser(Integer userId) {
-        return restTemplate.getForObject(baseUrl + "users/" + userId, User.class);
+    public void validateUser(Integer userId) {
+        restTemplate.getForObject(BASE_URL + "users/" + userId, User.class);
     }
 
     public Post findPostById(Integer id) {
-        return restTemplate.getForObject(baseUrl + "posts/" + id, Post.class);
+        return restTemplate.getForObject(BASE_URL + "posts/" + id, Post.class);
     }
 
 }
