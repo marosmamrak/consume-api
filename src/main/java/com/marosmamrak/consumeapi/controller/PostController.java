@@ -1,5 +1,6 @@
 package com.marosmamrak.consumeapi.controller;
 
+import com.marosmamrak.consumeapi.dto.PostUpdateDTO;
 import com.marosmamrak.consumeapi.service.ExternalApiService;
 import com.marosmamrak.consumeapi.model.Post;
 import com.marosmamrak.consumeapi.repository.PostRepository;
@@ -8,6 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -56,8 +59,9 @@ public class PostController {
 
     @GetMapping("/getPostByUserId/{userId}")
     @Operation(summary = "List post user by id")
-    public ResponseEntity<?> getPostsByUserId(@PathVariable Integer userId) {
-        return new ResponseEntity<>(postRepository.findByUserId(userId), HttpStatus.OK);
+    public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable Integer userId) {
+        List<Post> posts = postRepository.findByUserId(userId);
+        return ResponseEntity.ok(posts); // This uses ResponseEntity<List<Post>>
     }
 
     @DeleteMapping("/delete/{id}")
@@ -73,7 +77,7 @@ public class PostController {
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update specific post by id")
-    public ResponseEntity<Post> updatePost(@PathVariable Integer id, @RequestBody Post postUpdateRequest) {
+    public ResponseEntity<Post> updatePost(@PathVariable Integer id, @RequestBody PostUpdateDTO postUpdateRequest) {
         return postRepository.findById(id)
                 .map(existingPost -> {
                     existingPost.setTitle(postUpdateRequest.getTitle());
