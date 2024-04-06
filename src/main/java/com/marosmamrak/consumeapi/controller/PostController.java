@@ -1,92 +1,88 @@
 package com.marosmamrak.consumeapi.controller;
 
-import com.marosmamrak.consumeapi.dto.PostUpdateDTO;
-import com.marosmamrak.consumeapi.service.ExternalApiService;
-import com.marosmamrak.consumeapi.model.Post;
-import com.marosmamrak.consumeapi.repository.PostRepository;
+import com.marosmamrak.consumeapi.model.PostCreateDTO;
+import com.marosmamrak.consumeapi.model.PostDTO;
+import com.marosmamrak.consumeapi.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Post API", description = "Post management operations")
 public class PostController {
 
-    private final PostRepository postRepository;
-    private final ExternalApiService externalApiService;
+    private final PostService postService;
 
-    public PostController(PostRepository postRepository, ExternalApiService externalApiService) {
-        this.postRepository = postRepository;
-        this.externalApiService = externalApiService;
+    @Autowired
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
 
     @PostMapping("/add")
     @Operation(summary = "Add new post")
-    public ResponseEntity<Post> addPost(@RequestBody Post post) {
-        try {
-            // Assuming this method validates the userId and throws an exception if invalid
-            externalApiService.validateUser(post.getUserId());
-            Post savedPost = postRepository.save(post);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
-        } catch (Exception e) {
-            // Log the error or handle it as appropriate
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<PostDTO> addPost(@RequestBody PostCreateDTO postCreateDTO) {
+        PostDTO createdPost = postService.createPost(postCreateDTO);
+        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
+
+
 
     @GetMapping("/getPostById/{id}")
     @Operation(summary = "List post by id")
-    public ResponseEntity<Post> getPostById(@PathVariable Integer id) {
-        return postRepository.findById(id)
+    public ResponseEntity<?> getPostById(@PathVariable Integer id) {
+        Optional<PostDTO> postDTOOptional = postService.getPostById(id);
+        return postDTOOptional
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    try {
-                        Post post = externalApiService.findPostById(id);
-                        return ResponseEntity.ok(post);
-                    } catch (Exception e) {
-                        // Log the error or handle it as appropriate
-                        return ResponseEntity.notFound().build();
-                    }
-                });
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "Get posts by user ID",
+            description = "Retrieve all posts associated with a given user ID.")
+    public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable Integer userId) {
+        List<PostDTO> posts = postService.getPostsByUserId(userId);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/posts")
+    @Operation(summary = "Get all posts")
+    public ResponseEntity<List<PostDTO>> getAllPosts() {
+        List<PostDTO> posts = postService.getAllPosts();
+        return ResponseEntity.ok(posts);
     }
 
 
-    @GetMapping("/getPostByUserId/{userId}")
-    @Operation(summary = "List post user by id")
-    public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable Integer userId) {
-        List<Post> posts = postRepository.findByUserId(userId);
-        return ResponseEntity.ok(posts); // This uses ResponseEntity<List<Post>>
+    @PutMapping("/update/{id}")
+    @Operation(summary = "Update specific post by id")
+    public ResponseEntity<?> updatePost(@PathVariable Integer id, @RequestBody PostCreateDTO postCreateDTO) {
+        Optional<PostDTO> updatedPost = postService.updatePost(id, postCreateDTO);
+        return updatedPost
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete specific post")
     public ResponseEntity<?> deletePost(@PathVariable Integer id) {
         try {
-            postRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+            postService.deletePost(id);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    @PutMapping("/update/{id}")
-    @Operation(summary = "Update specific post by id")
-    public ResponseEntity<Post> updatePost(@PathVariable Integer id, @RequestBody PostUpdateDTO postUpdateRequest) {
-        return postRepository.findById(id)
-                .map(existingPost -> {
-                    existingPost.setTitle(postUpdateRequest.getTitle());
-                    existingPost.setBody(postUpdateRequest.getBody());
-                    postRepository.save(existingPost);
-                    return ResponseEntity.ok().body(existingPost);
-                })
-                .orElseThrow();
-    }
+
+
 
 
 

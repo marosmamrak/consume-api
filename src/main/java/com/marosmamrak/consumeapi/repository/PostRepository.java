@@ -1,6 +1,6 @@
 package com.marosmamrak.consumeapi.repository;
 
-import com.marosmamrak.consumeapi.model.Post;
+import com.marosmamrak.consumeapi.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
