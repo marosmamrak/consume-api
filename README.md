@@ -6,7 +6,6 @@ ConsumeAPI is a Spring Boot microservice designed to demonstrate RESTful API con
 
 - **CRUD Operations:** Create, Read, Update, and Delete posts.
 - **External API Integration:** Validates `userId` and fetches posts using external APIs.
-- **Containerization:** Dockerized setup for easy deployment and scaling.
 - **Swagger Documentation:** Interactive API documentation using Springdoc OpenAPI.
 
 ## Getting Started
@@ -15,9 +14,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-- JDK 17
+- JDK 21
 - Maven
-- Docker
 
 ### Installing
 
@@ -28,26 +26,25 @@ git clone https://github.com/marosmamrak/consume-api.git
 cd consume-api
 
 ```
-2. **Build the application
+2. Build the application
 ```bash
 mvn clean install
 ```
 
-3. **Run the application
+3. Run the application
+  You can run the application using Maven by executing the following command in the terminal from the root directory of your project:
 ```bash
-docker-compose up --build
+  mvn spring-boot:run
 ```
-
-4. **Accessing the application
+4. Accessing the application
   Web Interface: Open http://localhost:8080 in your web browser.
   Swagger UI: Navigate to http://localhost:8080/swagger-ui.html to explore the RESTful API.
 
-5. **Built with
+5. Built with
   Spring Boot - The web framework used
   Maven - Dependency Management
-  Docker - Containerization
   Springdoc OpenAPI - API documentation
 
-6. **Authors
+6. Authors
      Maros Mamrak - Initial work - marosmamrak
 
