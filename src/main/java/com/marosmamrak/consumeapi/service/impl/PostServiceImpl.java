@@ -73,13 +73,11 @@ public class PostServiceImpl implements PostService {
                 Post post = externalApiService.findPostById(id);
                 if (post != null) {
                     post.setUserId(0);
-                    post.setExternal(true);
                     post = postRepository.save(post);
                     return Optional.of(customMapper.toDTO(post));
                 }
             } catch (Exception e) {
-                logger.error("Error retrieving post with ID: {} from external service", id, e);
-
+                throw new PostNotFoundException("Post with id " + id + " not found.");
             }
         }
         return Optional.empty();

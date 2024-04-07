@@ -22,8 +22,4 @@ public class Post {
     @Column(name = "body")
     private String body;
 
-    @Column(name = "isExternal", nullable = false)
-    private boolean isExternal = false;
-
-
 }
