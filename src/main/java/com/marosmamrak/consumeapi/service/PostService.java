@@ -9,13 +9,12 @@ import java.util.Optional;
 public interface PostService {
     PostDTO createPost(PostCreateDTO postCreateDTO);
 
-    Optional<PostDTO> updatePost(Integer id, PostCreateDTO postCreateDTO);
+    PostDTO updatePost(Long id, PostCreateDTO postCreateDTO);
 
     List<PostDTO> getAllPosts();
 
-    List<PostDTO> getPostsByUserId(Integer userId);
+    List<PostDTO> getPostsByUserId(Long userId);
+    Optional<PostDTO> getPostById(Long id);
 
-    Optional<PostDTO> getPostById(Integer id);
-
-    void deletePost(Integer id);
+    void deletePost(Long id);
 }

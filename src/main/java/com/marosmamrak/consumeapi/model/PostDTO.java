@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PostDTO {
 
-    private Integer id;
-    private Integer userId;
+    private Long id;
+    private Long userId;
     private String title;
     private String body;
 
